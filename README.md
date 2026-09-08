@@ -1,5 +1,7 @@
 # Acute stroke prognosis analysis code
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22658666.svg)](https://doi.org/10.5281/zenodo.22658666)
+
 This repository contains the reproducible analysis code for the retrospective multicohort study of 30-day in-hospital mortality among critically ill patients with acute stroke. The study uses MIMIC-IV version 3.1 for model development and eICU-CRD version 2.0 for external validation.
 
 ## Scope

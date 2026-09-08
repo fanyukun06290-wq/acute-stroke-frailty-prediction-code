@@ -21,3 +21,7 @@ authors:
 version: 0.1.0
 date-released: 2026-09-08
 repository-code: "https://github.com/fanyukun06290-wq/acute-stroke-frailty-prediction-code"
+identifiers:
+  - type: doi
+    value: "10.5281/zenodo.22658666"
+    description: "Archived software release"
