@@ -1,0 +1,37 @@
+# Local data and derived analysis outputs
+data/*
+!data/README.md
+results/*
+!results/README.md
+
+# Patient-level and model artifacts
+*.csv
+*.rds
+*.RData
+*.rda
+*.parquet
+*.sqlite
+*.db
+*.xlsx
+*.feather
+
+# Local R and notebook state
+.Rhistory
+.RData
+.Ruserdata
+.Rproj.user/
+*.html
+*.nb.html
+*.log
+
+# Local configuration and credentials
+.env
+.Renviron
+*.ini
+*.toml
+*.pem
+*.key
+
+# Operating-system files
+Thumbs.db
+.DS_Store

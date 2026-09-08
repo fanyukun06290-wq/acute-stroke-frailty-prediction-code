@@ -1,0 +1,3 @@
+# Code availability statement
+
+All analysis code, including the SQL extraction queries and R scripts used for model development, external validation, sensitivity analyses, and figure generation, is available in the public repository https://github.com/fanyukun06290-wq/acute-stroke-frailty-prediction-code and will be archived with a permanent DOI before publication: [INSERT ZENODO DOI]. The MIMIC-IV and eICU-CRD datasets are not publicly redistributable and can only be accessed by credentialed researchers through the authorized PhysioNet procedures. No patient-level records or database credentials are included in the code repository.
