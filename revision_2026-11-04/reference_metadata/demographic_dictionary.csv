@@ -1,0 +1,3 @@
+variable,unit,mimic_rule,eicu_rule,qualification
+age_years,years,anchor_age + year(admittime) - anchor_year,numeric age; strings beginning > mapped to 90; otherwise missing,adult age >=18; deidentification limits exact elderly age
+sex,categorical F/M,upper(trim(patients.gender)),Male/M -> M; Female/F -> F; other -> NULL,unknown handled in frozen recipe; not imputed from outcome

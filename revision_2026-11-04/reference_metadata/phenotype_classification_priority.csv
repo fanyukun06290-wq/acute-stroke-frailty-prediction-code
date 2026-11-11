@@ -1,0 +1,12 @@
+priority,condition,result,main_cohort_possible
+1,trauma AND any acute/CVST/unspecified/other,EXCLUDE_TRAUMATIC,False
+2,n_primary_acute_groups > 1,MIXED_PRIMARY_ACUTE,True
+3,n_primary_acute_groups = 1 AND CVST,MIXED_WITH_CVST,True
+4,n_primary_acute_groups = 1 AND (unspecified OR other hemorrhage),MIXED_WITH_AMBIGUOUS_SECONDARY,True
+5,CVST,CVST,False
+6,AIS,AIS_STRICT,True
+7,ICH,ICH_STRICT,True
+8,SAH,SAH,True
+9,unspecified,UNSPECIFIED_STROKE,False
+10,other intracranial hemorrhage,OTHER_INTRACRANIAL_HEMORRHAGE,False
+11,otherwise,NO_STROKE_GROUP,False

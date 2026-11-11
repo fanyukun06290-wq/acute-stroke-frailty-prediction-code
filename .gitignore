@@ -1,37 +1,26 @@
-# Local data and derived analysis outputs
-data/*
-!data/README.md
-results/*
-!results/README.md
-
-# Patient-level and model artifacts
-*.csv
+**/private_*/
+**/*_results/
+**/qc/
+**/__pycache__/
+**/synthetic_workspaces/
+*.pyc
 *.rds
+*.RDS
+*.ubj
 *.RData
-*.rda
-*.parquet
-*.sqlite
-*.db
-*.xlsx
-*.feather
-
-# Local R and notebook state
-.Rhistory
-.RData
-.Ruserdata
-.Rproj.user/
-*.html
-*.nb.html
-*.log
-
-# Local configuration and credentials
-.env
+*.Rhistory
 .Renviron
-*.ini
-*.toml
-*.pem
-*.key
+.env
+*.csv
+!revision_2026-11-04/docs/original_analysis_package_versions.csv
+*.png
+*.jpg
+*.jpeg
+*.docx
+*.pdf
+*.zip
 
-# Operating-system files
-Thumbs.db
-.DS_Store
+!revision_2026-11-04/reference_metadata/*.csv
+!revision_2026-11-04/docs/supplement_dependency_coverage.csv
+
+!revision_2026-11-04/docs/resolved_supplement_producers.csv

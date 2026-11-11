@@ -1,57 +1,47 @@
-# Acute stroke prognosis analysis code
+# Acute stroke ICU prediction
 
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22658666.svg)](https://doi.org/10.5281/zenodo.22658666)
+Version 1.1.0 contains the source code for the revised BMC Medical Informatics and Decision Making manuscript. Start with [the portable run guide](PORTABLE_RUN_GUIDE.md) and [the reporting guide](REPORTING_RUN_GUIDE.md).
 
-This repository contains the reproducible analysis code for the retrospective multicohort study of 30-day in-hospital mortality among critically ill patients with acute stroke. The study uses MIMIC-IV version 3.1 for model development and eICU-CRD version 2.0 for external validation.
+The study develops models in MIMIC-IV v3.1 and evaluates them in eICU-CRD v2.0. The target is recorded death after an ICU landmark, before hospital discharge and before day 30 from ICU admission. It is not complete 30-day all-cause mortality. The main transported models exclude retrospective stroke subtype and diagnosis-derived comorbidity information. No validated frailty instrument is included.
 
-## Scope
+## Source layout
 
-The release contains read-only SQL extraction queries, R scripts for model development and validation, a reproducibility notebook, and the analysis plan. It does not contain MIMIC-IV or eICU-CRD data, patient-level exports, model objects, prediction files, database credentials, or manuscript files.
+- `revision_2026-11-04/sql/03_mimic_cvst_v2.sql`: current MIMIC extraction definition.
+- `revision_2026-11-04/sql/02_eicu_revision.sql`: current eICU extraction definition.
+- `revision_2026-11-04/sql/01_mimic_revision.sql`: historical pre-CVST-label correction, retained for source comparison only.
+- `revision_2026-11-04/R/`: fitting, uncertainty, sensitivity, checking and figure code. Historical `*subgroup_revision.R` files are not the current v2 subgroup route.
+- `revision_2026-11-04/13_build_gcs_features.py` and `18_gcs_rule_sensitivity.py`: GCS transformations using locally obtained event exports.
+- `revision_2026-11-04/37_prepare_cvst_v2_reporting.py`: v2 reporting builder; requires earlier computed outputs.
+- `revision_2026-11-04/docs/`: original-analysis package versions. This is an observed environment record, not a dependency lockfile.
+- `critical_care_code_release_2026-09-08/R/build_subgroup_threshold.R`: historical threshold-provenance input hashed by the revised DCA code; it is not part of the new primary fitting route.
 
-## Repository layout
+## Reproduction status
 
-- `sql/`: stroke phenotype and analysis-dataset extraction queries.
-- `R/`: model development, validation, sensitivity, table, and figure scripts.
-- `notebooks/`: portable R Markdown reproducibility notebook.
-- `data/`: local input directory; intentionally empty in the public release.
-- `results/`: local output directory; intentionally empty in the public release.
-- `docs/`: analysis plan, code-availability wording, audit record, and publication steps.
-- `LICENSE`: MIT license for the analysis code only; it does not license the MIMIC-IV or eICU-CRD data.
+Place the project directory under a working parent directory. R scripts use this retained relative layout. Install packages in your normal R library or set `STROKE_R_LIBRARY`; machine-specific library defaults were removed. Do not run analysis code against an existing frozen project directory: source hashes change after portability cleanup and saved caches must not be mixed between versions.
 
-## Reproduce the analysis
+After obtaining authorized database access, the intended order is:
 
-1. Obtain credentialed access to both databases through the authorized PhysioNet procedures. Do not place database passwords or connection settings in this repository.
-2. Run `sql/01_extract_mimic_iv_v3.1.sql` against the MIMIC-IV v3.1 schema and `sql/02_extract_eicu_crd_v2.0.sql` against the eICU-CRD v2.0 schema. Run the two files separately on their corresponding database connections.
-3. Export the query results locally as `data/mimic_analysis.csv` and `data/eicu_analysis.csv`. These files are excluded by `.gitignore` and must never be committed.
-4. Install the required R packages in a local R session:
+1. Obtain local cohort/analysis exports using the current SQL, with timing and source-quality summaries.
+2. Run primary fitting via `R/start_revision_models.R`, then uncertainty and calibration routines.
+3. Extract local GCS events and construct the neurological-reference/rule-sensitivity inputs before fitting the nested reference models.
+4. Run missingness, endpoint, repeat-admission, complete-case, DCA, SHAP and corrected-subgroup evaluations.
+5. Reconcile aggregate outputs with the exact manuscript/supplement version and archive the reviewed release.
 
-```r
-install.packages(c("tidymodels", "xgboost", "glmnet", "ranger"),
-                 repos = "https://cloud.r-project.org")
-```
+The local replay used a fresh MIMIC extraction and hash-verified eICU and GCS event exports. Component checks covered primary and reference model fitting, uncertainty, neurological sensitivity, DCA, SHAP, corrected subgroups, complete cases, repeated records, and discharge-related endpoint analyses. The revision reports were checked against the manuscript and supplementary tables. Use `run_subgroup_fresh_v2.R` followed by `check_subgroup_fresh_v2.R` for a fresh subgroup analysis. The scripts depend on intermediate outputs documented in `revision_2026-11-04/runtime_stages.json`.
 
-5. From the repository root, run model development:
+## Data and licensing
 
-```text
-Rscript R/run_stroke_models.R data/mimic_analysis.csv data/eicu_analysis.csv results/model_results
-```
+MIMIC/eICU require the applicable credentialing, training and data-use permissions. Keep exports, patient identifiers, predictions, fitted models, credentials and screenshots outside version control. The MIT license applies to code only and does not grant rights to source data. Do not publish generated output folders merely because code ran successfully.
 
-6. Run validation, figures, tables, and prespecified sensitivity analyses through `notebooks/acute_stroke_frailty_reproducibility.Rmd` or the individual scripts in `R/`. The default bootstrap setting is 1,000 patient-level resamples. Sensitivity analyses use `R/run_stroke_sensitivity.R`, followed by `R/run_sensitivity_validation.R` and `R/build_sensitivity_report.R`.
+## Citation status
 
-## Analysis safeguards
+Cite the archived record associated with the exact `v1.1.0` GitHub release once Zenodo issues the version-specific DOI. The historical [v1.0.0 archive](https://doi.org/10.5281/zenodo.22658666) documents the earlier analysis version.
 
-- MIMIC-IV is the development database; eICU-CRD is the external-validation database.
-- The 24-hour model uses the prespecified landmark eligibility flag and the outcome `death_24h_to_30d_inhospital`.
-- The 0–6-hour analysis is a sensitivity analysis using `death_30d_inhospital`.
-- Patient-level identifiers are used only for grouped splitting and bootstrap resampling, not as model predictors.
-- The models are research tools and are not validated for direct clinical decision-making.
+## Aggregate reporting additions
+See [REPORTING_RUN_GUIDE.md](REPORTING_RUN_GUIDE.md). Full clean-environment reproduction remains pending.
 
-## What must not be published
+## GCS component replay
+See `GCS_REPLAY_FIX.md` for the rule/directory prerequisites found during real local replay. Sixteen neurological reference models and sixteen missingness-sensitivity models were refitted and independently checked. Raw GCS event exports were reused after hash verification. This replay evaluates research models on the study cohorts.
 
-Never commit database exports, patient-level derived tables, prediction files, RDS model objects, `.Rhistory`, `.RData`, `.Renviron`, database passwords, Navicat screenshots, or local absolute paths. The repository's `.gitignore` blocks the main data and result extensions, but inspect `git status` before every commit.
-
-## Citation and code availability
-
-The authors should archive the reviewed release in a stable repository and insert the resulting DOI and repository URL into `docs/code_availability_statement.md` and the manuscript before submission. A `CITATION.cff` file is included for code citation metadata. Select and add an appropriate software license before making the repository public.
-
-Detailed GitHub and Zenodo instructions are in `docs/publishing_steps.md`.
+## Fresh sensitivity checks
+See FRESH_SENSITIVITY_CHECKS.md for the fresh subgroup checker and complete-case metadata prerequisites found in local replay. The guide lists the input and checker dependencies for these analyses.

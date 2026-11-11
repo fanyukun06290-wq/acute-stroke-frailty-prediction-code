@@ -1,0 +1,430 @@
+[
+  {
+    "stage": "extract_cohorts",
+    "command": "python portable_extract.py --source DATABASE --mode cohort",
+    "depends_on": [],
+    "cwd": "project",
+    "verification": "Run separately for mimic and eicu; requires authorized DB"
+  },
+  {
+    "stage": "extract_features",
+    "command": "python portable_extract.py --source DATABASE --mode extract",
+    "depends_on": [],
+    "cwd": "project",
+    "verification": "Run separately for mimic and eicu; requires authorized DB"
+  },
+  {
+    "stage": "metadata",
+    "command": "python initialize_reporting_metadata.py",
+    "depends_on": [],
+    "cwd": "project",
+    "verification": "requires real local data; not executed"
+  },
+  {
+    "stage": "fit_primary",
+    "command": "Rscript revision_2026-11-04/R/start_revision_models.R",
+    "depends_on": [
+      "extract_features"
+    ],
+    "cwd": "project_parent",
+    "verification": "requires real local data; not executed"
+  },
+  {
+    "stage": "receipt_primary",
+    "command": "python build_runtime_receipt.py model",
+    "depends_on": [
+      "fit_primary"
+    ],
+    "cwd": "project",
+    "verification": "requires real local data; not executed"
+  },
+  {
+    "stage": "primary_uncertainty",
+    "command": "Rscript revision_2026-11-04/R/run_revision_uncertainty.R",
+    "depends_on": [
+      "fit_primary"
+    ],
+    "cwd": "project_parent",
+    "verification": "requires real local data; not executed"
+  },
+  {
+    "stage": "primary_calibration",
+    "command": "Rscript revision_2026-11-04/R/plot_revision_calibration.R",
+    "depends_on": [
+      "primary_uncertainty"
+    ],
+    "cwd": "project_parent",
+    "verification": "requires real local data; not executed"
+  },
+  {
+    "stage": "gcs_extract",
+    "command": "python portable_gcs_extract.py --source DATABASE",
+    "depends_on": [
+      "extract_cohorts"
+    ],
+    "cwd": "project",
+    "verification": "requires real local data; not executed"
+  },
+  {
+    "stage": "gcs_construct",
+    "command": "python 13_build_gcs_features.py",
+    "depends_on": [
+      "gcs_extract",
+      "extract_features"
+    ],
+    "cwd": "project",
+    "verification": "requires real local data; not executed"
+  },
+  {
+    "stage": "receipt_gcs",
+    "command": "python build_runtime_receipt.py gcs",
+    "depends_on": [
+      "gcs_construct"
+    ],
+    "cwd": "project",
+    "verification": "requires real local data; not executed"
+  },
+  {
+    "stage": "clinical_fit",
+    "command": "Rscript revision_2026-11-04/R/run_clinical_ridge.R",
+    "depends_on": [
+      "receipt_primary"
+    ],
+    "cwd": "project_parent",
+    "verification": "requires real local data; not executed"
+  },
+  {
+    "stage": "clinical_intervals",
+    "command": "Rscript revision_2026-11-04/R/validate_clinical_ridge.R",
+    "depends_on": [
+      "clinical_fit"
+    ],
+    "cwd": "project_parent",
+    "verification": "requires real local data; not executed"
+  },
+  {
+    "stage": "receipt_clinical",
+    "command": "python build_runtime_receipt.py clinical",
+    "depends_on": [
+      "clinical_intervals"
+    ],
+    "cwd": "project",
+    "verification": "requires real local data; not executed"
+  },
+  {
+    "stage": "neuro_fit",
+    "command": "Rscript revision_2026-11-04/R/fit_neuro_nested.R",
+    "depends_on": [
+      "receipt_primary",
+      "receipt_gcs"
+    ],
+    "cwd": "project_parent",
+    "verification": "requires real local data; not executed"
+  },
+  {
+    "stage": "neuro_intervals",
+    "command": "Rscript revision_2026-11-04/R/validate_neuro_nested.R",
+    "depends_on": [
+      "neuro_fit"
+    ],
+    "cwd": "project_parent",
+    "verification": "requires real local data; not executed"
+  },
+  {
+    "stage": "receipt_neuro",
+    "command": "python build_runtime_receipt.py neuro",
+    "depends_on": [
+      "neuro_intervals"
+    ],
+    "cwd": "project",
+    "verification": "requires real local data; not executed"
+  },
+  {
+    "stage": "missing_fit",
+    "command": "Rscript revision_2026-11-04/R/fit_missingness_sensitivity.R",
+    "depends_on": [
+      "receipt_neuro"
+    ],
+    "cwd": "project_parent",
+    "verification": "requires real local data; not executed"
+  },
+  {
+    "stage": "missing_intervals",
+    "command": "Rscript revision_2026-11-04/R/validate_missingness_sensitivity.R",
+    "depends_on": [
+      "missing_fit"
+    ],
+    "cwd": "project_parent",
+    "verification": "requires real local data; not executed"
+  },
+  {
+    "stage": "receipt_missing",
+    "command": "python build_runtime_receipt.py missing",
+    "depends_on": [
+      "missing_intervals"
+    ],
+    "cwd": "project",
+    "verification": "requires real local data; not executed"
+  },
+  {
+    "stage": "gcs_variants",
+    "command": "python 18_gcs_rule_sensitivity.py",
+    "depends_on": [
+      "gcs_construct"
+    ],
+    "cwd": "project",
+    "verification": "requires real local data; not executed"
+  },
+  {
+    "stage": "gcs_stress",
+    "command": "Rscript revision_2026-11-04/R/evaluate_gcs_rule_stress.R",
+    "depends_on": [
+      "gcs_variants",
+      "receipt_neuro",
+      "receipt_missing"
+    ],
+    "cwd": "project_parent",
+    "verification": "requires real local data; not executed"
+  },
+  {
+    "stage": "gcs_stress_intervals",
+    "command": "Rscript revision_2026-11-04/R/validate_gcs_rule_stress.R",
+    "depends_on": [
+      "gcs_stress"
+    ],
+    "cwd": "project_parent",
+    "verification": "requires real local data; not executed"
+  },
+  {
+    "stage": "current_aliases",
+    "command": "python prepare_fresh_v2.py --with-predictions",
+    "depends_on": [
+      "extract_cohorts",
+      "fit_primary"
+    ],
+    "cwd": "project",
+    "verification": "requires real local data; not executed"
+  },
+  {
+    "stage": "subgroups",
+    "command": "Rscript revision_2026-11-04/R/run_subgroup_fresh_v2.R",
+    "depends_on": [
+      "current_aliases",
+      "primary_calibration"
+    ],
+    "cwd": "project_parent",
+    "verification": "requires real local data; not executed"
+  },
+  {
+    "stage": "complete_cases",
+    "command": "Rscript revision_2026-11-04/R/run_complete_case_revision.R",
+    "depends_on": [
+      "fit_primary",
+      "primary_calibration"
+    ],
+    "cwd": "project_parent",
+    "verification": "requires real local data; not executed"
+  },
+  {
+    "stage": "repeat_admissions",
+    "command": "Rscript revision_2026-11-04/R/run_repeat_admission_revision.R",
+    "depends_on": [
+      "fit_primary",
+      "extract_cohorts"
+    ],
+    "cwd": "project_parent",
+    "verification": "requires real local data; not executed"
+  },
+  {
+    "stage": "endpoint",
+    "command": "Rscript revision_2026-11-04/R/run_endpoint_revision.R",
+    "depends_on": [
+      "fit_primary",
+      "extract_cohorts"
+    ],
+    "cwd": "project_parent",
+    "verification": "requires real local data; not executed"
+  },
+  {
+    "stage": "dca",
+    "command": "Rscript revision_2026-11-04/R/run_dca_thresholds.R",
+    "depends_on": [
+      "receipt_primary",
+      "receipt_clinical",
+      "receipt_neuro",
+      "receipt_missing"
+    ],
+    "cwd": "project_parent",
+    "verification": "requires real local data; not executed"
+  },
+  {
+    "stage": "shap",
+    "command": "Rscript revision_2026-11-04/R/run_shap_domain_audit.R",
+    "depends_on": [
+      "fit_primary",
+      "primary_uncertainty"
+    ],
+    "cwd": "project_parent",
+    "verification": "requires real local data; not executed"
+  },
+  {
+    "stage": "cohort_accounting",
+    "command": "python build_cohort_accounting.py",
+    "depends_on": [
+      "extract_cohorts",
+      "fit_primary"
+    ],
+    "cwd": "project",
+    "verification": "requires real local data; not executed"
+  },
+  {
+    "stage": "baseline",
+    "command": "Rscript revision_2026-11-04/R/prepare_manuscript_baseline.R",
+    "depends_on": [
+      "current_aliases",
+      "metadata"
+    ],
+    "cwd": "project_parent",
+    "verification": "requires real local data; not executed"
+  },
+  {
+    "stage": "report_primary",
+    "command": "python run_reporting_stage.py primary",
+    "depends_on": [
+      "primary_calibration"
+    ],
+    "cwd": "project",
+    "verification": "requires real local data; not executed"
+  },
+  {
+    "stage": "report_parameters",
+    "command": "python run_reporting_stage.py parameters",
+    "depends_on": [
+      "fit_primary"
+    ],
+    "cwd": "project",
+    "verification": "requires real local data; not executed"
+  },
+  {
+    "stage": "report_complete_cases",
+    "command": "python run_reporting_stage.py complete_cases",
+    "depends_on": [
+      "complete_cases"
+    ],
+    "cwd": "project",
+    "verification": "requires real local data; not executed"
+  },
+  {
+    "stage": "report_repeat",
+    "command": "python run_reporting_stage.py repeat",
+    "depends_on": [
+      "repeat_admissions"
+    ],
+    "cwd": "project",
+    "verification": "requires real local data; not executed"
+  },
+  {
+    "stage": "report_subgroups",
+    "command": "python run_reporting_stage.py subgroups",
+    "depends_on": [
+      "subgroups"
+    ],
+    "cwd": "project",
+    "verification": "requires real local data; not executed"
+  },
+  {
+    "stage": "report_endpoint",
+    "command": "python run_reporting_stage.py endpoint",
+    "depends_on": [
+      "endpoint"
+    ],
+    "cwd": "project",
+    "verification": "requires real local data; not executed"
+  },
+  {
+    "stage": "report_dca",
+    "command": "python run_reporting_stage.py dca",
+    "depends_on": [
+      "dca"
+    ],
+    "cwd": "project",
+    "verification": "requires real local data; not executed"
+  },
+  {
+    "stage": "report_shap",
+    "command": "python run_reporting_stage.py shap",
+    "depends_on": [
+      "shap"
+    ],
+    "cwd": "project",
+    "verification": "requires real local data; not executed"
+  },
+  {
+    "stage": "figure_flow",
+    "command": "Rscript revision_2026-11-04/R/plot_patientflow_revision.R",
+    "depends_on": [
+      "cohort_accounting"
+    ],
+    "cwd": "project_parent",
+    "verification": "requires real local data; not executed"
+  },
+  {
+    "stage": "figure_dca",
+    "command": "Rscript revision_2026-11-04/R/plot_dca_thresholds.R",
+    "depends_on": [
+      "report_dca"
+    ],
+    "cwd": "project_parent",
+    "verification": "requires real local data; not executed"
+  },
+  {
+    "stage": "figure_shap",
+    "command": "Rscript revision_2026-11-04/R/plot_shap_domains.R",
+    "depends_on": [
+      "report_shap"
+    ],
+    "cwd": "project_parent",
+    "verification": "requires real local data; not executed"
+  },
+  {
+    "stage": "fresh_phenotypes",
+    "command": "python build_fresh_reports.py phenotypes",
+    "depends_on": [
+      "extract_cohorts"
+    ],
+    "cwd": "project",
+    "verification": "synthetic verification pending; real-data replay not performed"
+  },
+  {
+    "stage": "fresh_bounds",
+    "command": "python build_fresh_reports.py bounds",
+    "depends_on": [
+      "extract_features",
+      "metadata"
+    ],
+    "cwd": "project",
+    "verification": "synthetic verification pending; real-data replay not performed"
+  },
+  {
+    "stage": "fresh_time_flags",
+    "command": "python build_fresh_reports.py time_flags",
+    "depends_on": [
+      "fit_primary",
+      "extract_cohorts"
+    ],
+    "cwd": "project",
+    "verification": "synthetic verification pending; real-data replay not performed"
+  },
+  {
+    "stage": "fresh_index",
+    "command": "python build_fresh_reports.py index",
+    "depends_on": [
+      "fresh_phenotypes",
+      "fresh_bounds",
+      "fresh_time_flags",
+      "metadata"
+    ],
+    "cwd": "project",
+    "verification": "synthetic verification pending; real-data replay not performed"
+  }
+]

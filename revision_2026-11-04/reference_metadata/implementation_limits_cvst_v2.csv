@@ -1,0 +1,11 @@
+issue,implementation,interpretation
+diagnostic_source,MIMIC: entire index hospitalization; eICU: first selected ICU unit only,Not an equivalent clinical gold standard; no onset or imaging confirmation
+coding_version,eICU primary flags use ICD-9 only; ICD-10 concordance flags do not enter cohort_base,Do not describe eICU primary ascertainment as ICD-9 OR ICD-10
+CVST,"Both include I636, ICD-9 4376 and I676 in v2; eICU also has text terms on coded diagnosis rows","Code branches aligned; diagnosis source, text ascertainment and clinical validation remain different"
+trauma_text,eICU substring traumatic includes nontraumatic,No affected nontraumatic tokens in the current aggregate audit; substring matching remains a portability limitation
+diagnosis_time,No diagnosis position or pre-landmark recording requirement in cohort ascertainment,Retrospective cohort only; phenotype removed as predictor; incident inpatient stroke may remain
+TIA_and_history,MIMIC TIA/history flags computed but not used for exclusion,"Standalone TIA/history cannot enter, but concurrent history does not exclude acute codes"
+measurement_setting,"Both restricted to actual ICU window, but lab specimen sources and monitoring frequencies differ",No assertion of identical measurement process across databases
+blood_pressure,MIMIC arterial/noninvasive item IDs and eICU periodic/aperiodic rows pooled,No priority or frequency standardization; 24h means weighted by observed row counts
+unit_validation,Observed raw_long units compatible; SQL has no runtime unit filter or conversion,Audit is bounded to frozen extraction; not a generic future unit conversion engine
+timing,6h first eligible versus 24h mean; store/revised times required except monitor vitals,"Time availability operationalized, not proof of identical documentation latency"

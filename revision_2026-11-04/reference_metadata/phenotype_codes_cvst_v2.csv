@@ -1,0 +1,44 @@
+source,component,code_system,code_or_pattern,match_type,implementation_role,source_line,note,source_sql
+mimic,AIS,ICD-9,43301;43311;43321;43331;43381;43391;43401;43411;43491,exact normalized token,primary acute flag,27,,sql/03_mimic_cvst_v2.sql
+mimic,ICH,ICD-9,431,exact normalized token,primary or ambiguity flag,38,,sql/03_mimic_cvst_v2.sql
+mimic,ICH,ICD-10,I61,prefix,used in flag,39,,sql/03_mimic_cvst_v2.sql
+mimic,SAH,ICD-9,430,exact normalized token,primary or ambiguity flag,42,,sql/03_mimic_cvst_v2.sql
+mimic,SAH,ICD-10,I60,prefix,used in flag,43,,sql/03_mimic_cvst_v2.sql
+mimic,unspecified_stroke,ICD-9,436,exact normalized token,primary or ambiguity flag,46,,sql/03_mimic_cvst_v2.sql
+mimic,unspecified_stroke,ICD-10,I64,prefix,used in flag,47,,sql/03_mimic_cvst_v2.sql
+mimic,other_intracranial_hemorrhage,ICD-9,432,prefix,primary or ambiguity flag,50,,sql/03_mimic_cvst_v2.sql
+mimic,other_intracranial_hemorrhage,ICD-10,I62,prefix,used in flag,51,,sql/03_mimic_cvst_v2.sql
+mimic,AIS,ICD-10,I63 except I636,prefix with exclusion,primary acute flag,29,,sql/03_mimic_cvst_v2.sql
+mimic,CVST,ICD-10,I636,prefix,CVST ambiguity flag,30,,sql/03_mimic_cvst_v2.sql
+mimic,trauma,ICD-9,85,prefix,exclusion flag,54,,sql/03_mimic_cvst_v2.sql
+mimic,trauma,ICD-10,S06,prefix,exclusion flag,55,,sql/03_mimic_cvst_v2.sql
+eicu,AIS,ICD-9,43301;43311;43321;43331;43381;43391;43401;43411;43491,exact normalized token,primary acute flag,44,,sql/02_eicu_revision.sql
+eicu,ICH,ICD-9,431,exact normalized token,primary or ambiguity flag,46,eICU hemorrhage row also excludes trauma text; see text rules,sql/02_eicu_revision.sql
+eicu,ICH,ICD-10,I61,prefix,computed concordant only; not used in main flag,61,eICU hemorrhage row also excludes trauma text; see text rules,sql/02_eicu_revision.sql
+eicu,SAH,ICD-9,430,exact normalized token,primary or ambiguity flag,50,eICU hemorrhage row also excludes trauma text; see text rules,sql/02_eicu_revision.sql
+eicu,SAH,ICD-10,I60,prefix,computed concordant only; not used in main flag,66,eICU hemorrhage row also excludes trauma text; see text rules,sql/02_eicu_revision.sql
+eicu,unspecified_stroke,ICD-9,436,exact normalized token,primary or ambiguity flag,54,,sql/02_eicu_revision.sql
+eicu,unspecified_stroke,ICD-10,I64,prefix,computed concordant only; not used in main flag,71,,sql/02_eicu_revision.sql
+eicu,other_intracranial_hemorrhage,ICD-9,432,prefix,primary or ambiguity flag,55,eICU hemorrhage row also excludes trauma text; see text rules,sql/02_eicu_revision.sql
+eicu,other_intracranial_hemorrhage,ICD-10,I62,prefix,computed concordant only; not used in main flag,72,eICU hemorrhage row also excludes trauma text; see text rules,sql/02_eicu_revision.sql
+eicu,AIS,ICD-10,I63 except I636,prefix with exclusion,computed concordant only; not used in main flag,59,,sql/02_eicu_revision.sql
+eicu,CVST,ICD-10,I636,prefix,CVST ambiguity flag,59,,sql/02_eicu_revision.sql
+eicu,trauma,ICD-9,85,prefix,exclusion flag,84,,sql/02_eicu_revision.sql
+eicu,trauma,ICD-10,S06,prefix,exclusion flag,85,,sql/02_eicu_revision.sql
+eicu,CVST,ICD-9,4376,exact normalized token,CVST ambiguity flag,77,,sql/02_eicu_revision.sql
+eicu,CVST,ICD-10,I676,prefix,CVST ambiguity flag,79,,sql/02_eicu_revision.sql
+eicu,trauma and hemorrhage guards,diagnosis text,trauma - cns,case-insensitive substring,exclusion/hemorrhage suppression,47,Substring traumatic also matches nontraumatic/non-traumatic; not negation aware,sql/02_eicu_revision.sql
+eicu,trauma and hemorrhage guards,diagnosis text,traumatic,case-insensitive substring,exclusion/hemorrhage suppression,48,Substring traumatic also matches nontraumatic/non-traumatic; not negation aware,sql/02_eicu_revision.sql
+eicu,trauma and hemorrhage guards,diagnosis text,intracranial injury,case-insensitive substring,exclusion/hemorrhage suppression,49,Substring traumatic also matches nontraumatic/non-traumatic; not negation aware,sql/02_eicu_revision.sql
+eicu,CVST,diagnosis text,cortical venous thrombosis,case-insensitive substring,CVST ambiguity flag,80,Only rows with a nonempty icd9code token enter tokenized,sql/02_eicu_revision.sql
+eicu,CVST,diagnosis text,cerebral venous thrombosis,case-insensitive substring,CVST ambiguity flag,81,Only rows with a nonempty icd9code token enter tokenized,sql/02_eicu_revision.sql
+eicu,CVST,diagnosis text,intracranial venous thrombosis,case-insensitive substring,CVST ambiguity flag,82,Only rows with a nonempty icd9code token enter tokenized,sql/02_eicu_revision.sql
+eicu,CVST,diagnosis text,thrombosis of intracranial venous,case-insensitive substring,CVST ambiguity flag,83,Only rows with a nonempty icd9code token enter tokenized,sql/02_eicu_revision.sql
+mimic,TIA,ICD-9,435,prefix,computed only; not selected or used for exclusion,58,,sql/03_mimic_cvst_v2.sql
+mimic,TIA,ICD-10,G45,prefix,computed only; not selected or used for exclusion,59,,sql/03_mimic_cvst_v2.sql
+mimic,history_or_sequela,ICD-9,438,prefix,computed only; not selected or used for exclusion,62,,sql/03_mimic_cvst_v2.sql
+mimic,history_or_sequela,ICD-10,I69,prefix,computed only; not selected or used for exclusion,63,,sql/03_mimic_cvst_v2.sql
+mimic,history_or_sequela,ICD-9,V1254,exact,computed only; not selected or used for exclusion,64,,sql/03_mimic_cvst_v2.sql
+mimic,history_or_sequela,ICD-10,Z8673,prefix,computed only; not selected or used for exclusion,65,,sql/03_mimic_cvst_v2.sql
+mimic,CVST,ICD-9,4376,exact normalized token,CVST ambiguity flag,34,Added in CVST metadata v2; no change to cohort membership or primary predictors,sql/03_mimic_cvst_v2.sql
+mimic,CVST,ICD-10,I676,prefix,CVST ambiguity flag,35,Added in CVST metadata v2; no change to cohort membership or primary predictors,sql/03_mimic_cvst_v2.sql
