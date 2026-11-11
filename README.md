@@ -1,8 +1,14 @@
 # Acute stroke prognosis analysis code
 
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22658666.svg)](https://doi.org/10.5281/zenodo.22658666)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.24128087.svg)](https://doi.org/10.5281/zenodo.24128087)
+
+For the revised manuscript, use [GitHub release v1.1.0](https://github.com/fanyukun06290-wq/acute-stroke-frailty-prediction-code/releases/tag/v1.1.0) and cite the [version-specific Zenodo archive](https://doi.org/10.5281/zenodo.24128087). That release contains the revised extraction and analysis workflows and their reproduction instructions.
 
 This repository contains the reproducible analysis code for the retrospective multicohort study of 30-day in-hospital mortality among critically ill patients with acute stroke. The study uses MIMIC-IV version 3.1 for model development and eICU-CRD version 2.0 for external validation.
+
+## Original analysis on the default branch
+
+The files and instructions below document the original analysis. Its source archive is [v1.0.0 on Zenodo](https://doi.org/10.5281/zenodo.22658666).
 
 ## Scope
 
@@ -49,9 +55,3 @@ Rscript R/run_stroke_models.R data/mimic_analysis.csv data/eicu_analysis.csv res
 ## What must not be published
 
 Never commit database exports, patient-level derived tables, prediction files, RDS model objects, `.Rhistory`, `.RData`, `.Renviron`, database passwords, Navicat screenshots, or local absolute paths. The repository's `.gitignore` blocks the main data and result extensions, but inspect `git status` before every commit.
-
-## Citation and code availability
-
-The authors should archive the reviewed release in a stable repository and insert the resulting DOI and repository URL into `docs/code_availability_statement.md` and the manuscript before submission. A `CITATION.cff` file is included for code citation metadata. Select and add an appropriate software license before making the repository public.
-
-Detailed GitHub and Zenodo instructions are in `docs/publishing_steps.md`.

@@ -1,6 +1,6 @@
 cff-version: 1.2.0
-message: "If you use this code, please cite the associated article and this archived code release."
-title: "Acute stroke prognosis analysis code"
+message: "Cite the archived v1.1.0 release for the revised manuscript. See the README for the original analysis archive."
+title: "Acute stroke ICU prediction revision analysis code"
 type: software
 authors:
   - family-names: Fan
@@ -18,10 +18,9 @@ authors:
   - family-names: Yin
     given-names: Lin
     affiliation: "Department of Neurology, The Second Hospital of Dalian Medical University"
-version: 0.1.0
-date-released: 2026-09-08
+version: "1.1.0"
+date-released: 2026-11-11
 repository-code: "https://github.com/fanyukun06290-wq/acute-stroke-frailty-prediction-code"
-identifiers:
-  - type: doi
-    value: "10.5281/zenodo.22658666"
-    description: "Archived software release"
+doi: "10.5281/zenodo.24128087"
+license: MIT
+url: "https://github.com/fanyukun06290-wq/acute-stroke-frailty-prediction-code/releases/tag/v1.1.0"
